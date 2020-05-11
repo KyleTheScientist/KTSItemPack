@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using ItemAPI;
+
 using System.Reflection;
 using MonoMod.RuntimeDetour;
 using Random = UnityEngine.Random;
+using ItemAPI;
 using CustomItems;
 public class StickyBomb : PassiveItem
 {
@@ -27,7 +28,7 @@ public class StickyBomb : PassiveItem
         ItemBuilder.SetupItem(item, shortDesc, longDesc, "kts");
         item.quality = PickupObject.ItemQuality.C;
 
-        stickyBombPrefab = SpriteBuilder.SpriteFromResource(resourcePath, copyFromExisting: false).GetComponent<tk2dSprite>().gameObject;
+        stickyBombPrefab = SpriteBuilder.SpriteFromResource(resourcePath).GetComponent<tk2dSprite>().gameObject;
         GameObject.DontDestroyOnLoad(stickyBombPrefab);
         FakePrefab.MarkAsFakePrefab(stickyBombPrefab);
         stickyBombPrefab.SetActive(false);
@@ -126,7 +127,7 @@ public class StickyBomb : PassiveItem
         if (sprite && murdler)
         {
             explosionData.damage = murdler.stats.GetBaseStatValue(PlayerStats.StatType.Damage) * 20f;
-            Exploder.Explode(sprite.WorldCenter, explosionData, Vector2.zero, null, true);
+            Exploder.Explode(sprite.WorldCenter, explosionData, Vector2.zero, null, false);
             GameObject.Destroy(sprite);
         }
     }

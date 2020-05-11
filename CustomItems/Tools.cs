@@ -109,5 +109,41 @@ namespace CustomItems
             File.WriteAllBytes(Path.Combine(ETGMod.ResourcesDirectory, texture.name + ".png"), ((Texture2D)texture).EncodeToPNG());
         }
 
+        public static void LogPropertiesAndFields<T>(this T obj, string header = "")
+        {
+            Log(header);
+            Log("=======================");
+            if (obj == null) { Log("LogPropertiesAndFields: Null object"); return; }
+            Type type = obj.GetType();
+            Log($"Type: {type}");
+            PropertyInfo[] pinfos = type.GetProperties();
+            Log($"{typeof(T)} Properties: ");
+            foreach (var pinfo in pinfos)
+            {
+                try
+                {
+                    var value = pinfo.GetValue(obj, null);
+                    string valueString = value.ToString();
+                    bool isList = obj?.GetType().GetGenericTypeDefinition() == typeof(List<>);
+                    if (isList)
+                    {
+                        var list = value as List<object>;
+                        valueString = $"List[{list.Count}]";
+                        foreach (var subval in list)
+                        {
+                            valueString += "\n\t\t" + subval.ToString();
+                        }
+                    }
+                    Log($"\t{pinfo.Name}: {valueString}");
+                }
+                catch { }
+            }
+            Log($"{typeof(T)} Fields: ");
+            FieldInfo[] finfos = type.GetFields();
+            foreach (var finfo in finfos)
+            {
+                Log($"\t{finfo.Name}: {finfo.GetValue(obj)}");
+            }
+        }
     }
 }

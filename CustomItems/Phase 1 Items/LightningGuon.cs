@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using ItemAPI;
+
 using System.Reflection;
 using MonoMod.RuntimeDetour;
 
@@ -100,14 +101,20 @@ namespace CustomItems
         }
         protected override void OnDestroy()
         {
-            guonHook.Dispose();
-
-            if (Owner && Owner.GetComponent<LightningGuonBehaviour>() != null)
+            try
             {
-                Owner.GetComponent<LightningGuonBehaviour>().Destroy();
+                if (guonHook != null)
+                    guonHook.Dispose();
+
+                if (Owner && Owner.GetComponent<LightningGuonBehaviour>() != null)
+                {
+                    Owner.GetComponent<LightningGuonBehaviour>().Destroy();
+                }
+                speedUp = false;
+                if (this.m_owner)
+                    base.OnDestroy();
             }
-            speedUp = false;
-            base.OnDestroy();
+            catch { }
         }
 
         public static void GuonInit(Action<PlayerOrbital, PlayerController> orig, PlayerOrbital self, PlayerController player)
@@ -136,10 +143,13 @@ namespace CustomItems
 
             public void Destroy()
             {
-                foreach (var orbital in owner.orbitals)
+                if (owner.orbitals != null)
                 {
-                    var o = (PlayerOrbital)orbital;
-                    o.orbitDegreesPerSecond = 90;
+                    foreach (var orbital in owner.orbitals)
+                    {
+                        var o = (PlayerOrbital)orbital;
+                        o.orbitDegreesPerSecond = 90;
+                    }
                 }
                 Destroy(this);
             }

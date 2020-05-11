@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using ItemAPI;
+
 using System.Collections;
 using Dungeonator;
+using ItemAPI;
 
 namespace CustomItems
 {
@@ -79,7 +80,7 @@ namespace CustomItems
             RoomHandler room = user.CurrentRoom;
             float r = UnityEngine.Random.value;
 
-            if (r < .5)
+            if (r <= .5)
                 GoodEffect(user);
             else
                 BadEffect(user);
@@ -94,7 +95,7 @@ namespace CustomItems
             string header = "You Win!";
             string text = "";
 
-            if (r < .001)
+            if (r < .01)
             {
                 var room = user.CurrentRoom;
                 IntVector2? pos = room.GetRandomAvailableCell();
@@ -143,7 +144,7 @@ namespace CustomItems
             }
 
             AkSoundEngine.PostEvent(slotWin, base.gameObject);
-            Notify(header, text);
+            Notify(header, text, true);
         }
 
         private void BadEffect(PlayerController user)
@@ -186,19 +187,19 @@ namespace CustomItems
             }
 
             AkSoundEngine.PostEvent(slotLose, base.gameObject);
-            Notify(header, text);
+            Notify(header, text, false);
         }
 
 
-        private void Notify(string header, string text)
+        private void Notify(string header, string text, bool win)
         {
             var sprite = GameUIRoot.Instance.notificationController.notificationObjectSprite;
             GameUIRoot.Instance.notificationController.DoCustomNotification(
                 header,
                 text,
-                sprite.Collection,
-                sprite.spriteId,
-                UINotificationController.NotificationColor.PURPLE, 
+                null,
+                -1,
+                win ? UINotificationController.NotificationColor.GOLD : UINotificationController.NotificationColor.SILVER, 
                 false, 
                 false);
         }

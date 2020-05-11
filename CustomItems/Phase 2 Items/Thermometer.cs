@@ -5,6 +5,7 @@ using System.Text;
 
 using UnityEngine;
 using ItemAPI;
+
 namespace CustomItems
 {
     public class Thermometer : PassiveItem
@@ -25,6 +26,12 @@ namespace CustomItems
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "kts");
             ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Coolness, 1);
             item.quality = PickupObject.ItemQuality.B;
+            item.AddToSubShop(ItemBuilder.ShopType.Goopton, 1f);
+        }
+
+        public override void Pickup(PlayerController player)
+        {
+            base.Pickup(player);
         }
 
         protected override void Update()

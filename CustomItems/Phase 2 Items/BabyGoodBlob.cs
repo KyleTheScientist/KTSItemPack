@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-using ItemAPI;
+
 using MonoMod.RuntimeDetour;
 using FullInspector;
 using System.Collections;
+using ItemAPI;
 
 using Random = UnityEngine.Random;
 namespace CustomItems
@@ -38,6 +39,8 @@ namespace CustomItems
             item.quality = PickupObject.ItemQuality.A;
             item.CompanionGuid = guid;
             item.Synergies = new CompanionTransformSynergy[0];
+            item.AddToSubShop(ItemBuilder.ShopType.Goopton, 1f);
+
             BuildPrefab();
         }
 

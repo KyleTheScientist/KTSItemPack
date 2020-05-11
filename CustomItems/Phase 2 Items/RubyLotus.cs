@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-using UnityEngine;
 using ItemAPI;
+using UnityEngine;
+
 namespace CustomItems
 {
     class RubyLotus : PassiveItem
@@ -43,6 +44,7 @@ namespace CustomItems
 
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "kts");
             item.quality = PickupObject.ItemQuality.D;
+            item.AddToSubShop(ItemBuilder.ShopType.Goopton, 1f);
         }
 
         protected override void Update()
@@ -54,6 +56,7 @@ namespace CustomItems
         private float healthPercent = 0, lastHealthPercent = -1;
         private void EvaluateStats()
         {
+            if (!this.Owner?.healthHaver || !this.Owner.stats) return;
             healthPercent = this.Owner.healthHaver.GetCurrentHealthPercentage();
             if (healthPercent == lastHealthPercent) return;
 

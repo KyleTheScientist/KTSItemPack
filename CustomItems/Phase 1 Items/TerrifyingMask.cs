@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ItemAPI;
+
 using UnityEngine;
 using Dungeonator;
 using System.Collections;
+using ItemAPI;
 
 namespace CustomItems
 {
@@ -48,6 +49,7 @@ namespace CustomItems
             //Set some other fields
             item.consumable = false;
             item.quality = ItemQuality.D;
+            item.AddToSubShop(ItemBuilder.ShopType.Cursula, 1f);
         }
 
         protected override void DoEffect(PlayerController user)

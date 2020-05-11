@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+
 using ItemAPI;
 
 namespace CustomItems
@@ -46,6 +47,8 @@ namespace CustomItems
             //Set some other fields
             item.consumable = false;
             item.quality = ItemQuality.B;
+            item.AddToSubShop(ItemBuilder.ShopType.Flynt, 1f);
+
         }
 
         protected override void DoEffect(PlayerController user)

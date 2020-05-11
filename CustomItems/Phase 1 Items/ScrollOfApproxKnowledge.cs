@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ItemAPI;
+
 using UnityEngine;
 using ChestType = Chest.GeneralChestType;
+using ItemAPI;
 
 namespace CustomItems
 {
@@ -48,8 +49,8 @@ namespace CustomItems
 
         public static void BuildPrefabs()
         {
-            gunFXPrefab = SpriteBuilder.SpriteFromResource(gunFXPath, null, false);
-            itemFXPrefab = SpriteBuilder.SpriteFromResource(itemFXPath, null, false);
+            gunFXPrefab = SpriteBuilder.SpriteFromResource(gunFXPath, null);
+            itemFXPrefab = SpriteBuilder.SpriteFromResource(itemFXPath, null);
 
             gunFXPrefab.name = fxName;
             itemFXPrefab.name = fxName;

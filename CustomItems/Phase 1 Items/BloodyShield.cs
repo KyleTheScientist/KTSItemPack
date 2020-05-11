@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using ItemAPI;
 
+
 namespace CustomItems
 {
     class BloodShield : PlayerItem
@@ -45,6 +46,7 @@ namespace CustomItems
             //Set some other fields
             item.consumable = false;
             item.quality = ItemQuality.B;
+            item.AddToSubShop(ItemBuilder.ShopType.Goopton, 1f);
         }
 
         //Removes one heart from the player, gives them 1 armor

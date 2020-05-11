@@ -5,9 +5,9 @@ using System.Text;
 using System.Reflection;
 
 using UnityEngine;
-using ItemAPI;
 using Dungeonator;
 using CustomItems;
+using ItemAPI;
 
 using MonoMod.RuntimeDetour;
 public class CloakAndDagger : PlayerItem
@@ -43,6 +43,7 @@ public class CloakAndDagger : PlayerItem
         ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, cooldown);
         ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Curse, 1);
         item.quality = ItemQuality.B;
+        item.AddToSubShop(ItemBuilder.ShopType.Cursula, 1f);
     }
 
     protected override void OnPreDrop(PlayerController user)

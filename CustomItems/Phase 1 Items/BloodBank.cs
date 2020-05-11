@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ItemAPI;
+
 using UnityEngine;
+using ItemAPI;
 
 namespace CustomItems
 {
@@ -29,7 +30,6 @@ namespace CustomItems
             //Ammonomicon entry variables
             string shortDesc = "Cash 4 Blood";
             string longDesc = "A medically-sound device that pays you for blood.\n\n" +
-                "This item was brought to the Gungeon in a mysterious golden chest. " +
                 "Etched into the back is the letter 'I'.";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.

@@ -65,12 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ItemAPI\CompanionBuilder.cs" />
+    <Compile Include="ItemAPI\CustomSynergies.cs" />
     <Compile Include="ItemAPI\FakePrefab\FakePrefab.cs" />
     <Compile Include="ItemAPI\FakePrefab\FakePrefabHooks.cs" />
     <Compile Include="Phase 1 Items\BloodBank.cs" />
     <Compile Include="Phase 1 Items\BloodyShield.cs" />
     <Compile Include="Phase 1 Items\CursedRing.cs" />
-    <Compile Include="CustomItemsMod.cs" />
+    <Compile Include="KTSItemsModule.cs" />
     <Compile Include="Phase 1 Items\ChestReroller.cs" />
     <Compile Include="ItemAPI\ItemBuilder.cs" />
     <Compile Include="ItemAPI\ResourceExtractor.cs" />
@@ -91,6 +92,9 @@
     <Compile Include="Phase 2 Items\StickyBomb.cs" />
     <Compile Include="Phase 2 Items\RubyLotus.cs" />
     <Compile Include="Phase 2 Items\Thermometer.cs" />
+    <Compile Include="Phase 3 Items\BigSlime.cs" />
+    <Compile Include="Phase 3 Items\Leveler.cs" />
+    <Compile Include="Phase 3 Items\LevelerGUIController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Phase 1 Items\TerrifyingMask.cs" />
     <Compile Include="Phase 2 Items\MagicMirror.cs" />
@@ -230,6 +234,48 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\P1\swiftness_guon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\Leveler\panel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_strength.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_dexterity.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_vitality.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_agility.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_charisma.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_luck.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\point.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\Leveler\readme.png" />
+    <EmbeddedResource Include="Resources\P3\Leveler\xpbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\Leveler\icon_swiftness.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\Leveler\level.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\ilevel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\MySon\Idle\son_idle_001.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\Idle\son_idle_002.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\Idle\son_idle_003.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\Idle\son_idle_004.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveLeft\son_move_left_001.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveLeft\son_move_left_002.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveLeft\son_move_left_003.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveLeft\son_move_left_004.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveRight\son_move_right_001.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveRight\son_move_right_002.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveRight\son_move_right_003.png" />
+    <EmbeddedResource Include="Resources\P3\MySon\MoveRight\son_move_right_004.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\P3\MySon\item_sprite.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

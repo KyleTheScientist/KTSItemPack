@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using ItemAPI;
+
 using MonoMod.RuntimeDetour;
+using ItemAPI;
 using UnityEngine;
 
 namespace CustomItems
@@ -55,6 +56,8 @@ namespace CustomItems
             item.consumable = false;
             item.quality = ItemQuality.A;
             item.CanBeDropped = false;
+            item.AddToSubShop(ItemBuilder.ShopType.Cursula, 1f);
+
 
             try
             {

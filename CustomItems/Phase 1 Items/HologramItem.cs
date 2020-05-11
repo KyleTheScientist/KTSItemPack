@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using ItemAPI;
+
 using UnityEngine;
 using Dungeonator;
 using System.Collections;
-
 using MonoMod.RuntimeDetour;
+using ItemAPI;
+
 namespace CustomItems
 {
     class HologramItem : PlayerItem

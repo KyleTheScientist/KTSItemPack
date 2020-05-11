@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
-using ItemAPI;
+using CustomItems;
 using MonoMod.RuntimeDetour;
+using ItemAPI;
 public class NinjaMask : PassiveItem
 {
     private float rollDistanceMultiplier = 1.3f;
@@ -25,12 +26,6 @@ public class NinjaMask : PassiveItem
 
         ItemBuilder.SetupItem(item, shortDesc, longDesc, "kts");
         item.quality = PickupObject.ItemQuality.D;
-
-        Hook rollEnd = new Hook(
-            typeof(PlayerController).GetMethod("ClearDodgeRollState", BindingFlags.NonPublic | BindingFlags.Instance),
-            typeof(NinjaMask).GetMethod("ClearDodgeRollState")
-        );
-
     }
 
     public static void ClearDodgeRollState(Action<PlayerController> orig, PlayerController self)
@@ -39,6 +34,8 @@ public class NinjaMask : PassiveItem
         OnDodgeRollEnded?.Invoke(self);
     }
 
+    Hook rollEnd;
+    StatModifier rollMod;
     public override void Pickup(PlayerController player)
     {
         base.Pickup(player);
@@ -46,7 +43,11 @@ public class NinjaMask : PassiveItem
         player.OnPreDodgeRoll += this.OnPreDodgeRoll;
         NinjaMask.OnDodgeRollEnded += OnPostDodgeRoll;
 
-        player.rollStats.distance *= rollDistanceMultiplier;
+        rollMod = ItemBuilder.AddPassiveStatModifier(this, PlayerStats.StatType.DodgeRollDistanceMultiplier, rollDistanceMultiplier);
+        rollEnd = new Hook(
+            typeof(PlayerController).GetMethod("ClearDodgeRollState", BindingFlags.NonPublic | BindingFlags.Instance),
+            typeof(NinjaMask).GetMethod("ClearDodgeRollState")
+        );
     }
 
     private PlayerController affectedPlayer;
@@ -68,7 +69,8 @@ public class NinjaMask : PassiveItem
     public override DebrisObject Drop(PlayerController player)
     {
         player.specRigidbody.RemoveCollisionLayerIgnoreOverride(CollisionMask.LayerToMask(CollisionLayer.EnemyHitBox, CollisionLayer.EnemyCollider));
-        player.rollStats.distance /= rollDistanceMultiplier;
+        ItemBuilder.RemovePassiveStatModifier(this, rollMod);
+        rollEnd?.Dispose();
         return base.Drop(player);
     }
 

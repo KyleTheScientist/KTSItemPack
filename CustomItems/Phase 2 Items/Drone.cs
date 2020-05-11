@@ -7,6 +7,7 @@ using System.Reflection;
 using Dungeonator;
 using UnityEngine;
 using ItemAPI;
+
 namespace CustomItems
 {
     public class Drone : PlayerItem
@@ -52,6 +53,10 @@ namespace CustomItems
             ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, cooldown);
             item.quality = ItemQuality.C;
             BuildDronePrefab();
+            item.AddToSubShop(ItemBuilder.ShopType.Trorc, 1f);
+            CustomSynergies.Add("The Fire and the Flames", new List<string>() { "kts:toy_drone", "napalm_strike" });
+            CustomSynergies.Add("Apache Thunder", new List<string>() { "kts:toy_drone", "air_strike" });
+            CustomSynergies.Add("Remote Control", new List<string>() { "kts:toy_drone" }, new List<string>() { "remote_bullets", "3rd_party_controller" });
         }
 
         private bool droneActive;
@@ -61,8 +66,6 @@ namespace CustomItems
             if (!droneActive)
             {
                 AkSoundEngine.PostEvent("Play_OBJ_mine_beep_01", user.gameObject);
-                //moveSpeed = user.stats.GetBaseStatValue(PlayerStats.StatType.MovementSpeed);
-                //user.stats.SetBaseStatValue(PlayerStats.StatType.MovementSpeed, 0, user);
 
                 extant_drone = GameObject.Instantiate(dronePrefab, user.transform);
                 extant_drone.AddComponent<DroneBehaviour>().SetOwner(user);
@@ -75,7 +78,6 @@ namespace CustomItems
             else
             {
                 DetonateDrone();
-                //user.stats.SetBaseStatValue(PlayerStats.StatType.MovementSpeed, moveSpeed, user);
                 droneActive = false;
             }
 
@@ -87,7 +89,6 @@ namespace CustomItems
             if (droneActive)
             {
                 DetonateDrone();
-                //user.stats.SetBaseStatValue(PlayerStats.StatType.MovementSpeed, moveSpeed, user);
                 droneActive = false;
             }
         }
@@ -110,19 +111,56 @@ namespace CustomItems
             return result;
         }
 
+        ExplosionData explosionData = new ExplosionData()
+        {
+            damageRadius = 5f,
+            damageToPlayer = 0f,
+            doDamage = true,
+            damage = 50f,
+            doDestroyProjectiles = false,
+            doForce = true,
+            debrisForce = 30f,
+            preventPlayerForce = false,
+            explosionDelay = 0.1f,
+            usesComprehensiveDelay = false,
+            doScreenShake = false,
+            ss = new ScreenShakeSettings(),
+            playDefaultSFX = true,
+        };
         private void DetonateDrone()
         {
-            Exploder.Explode(extant_drone.GetComponent<tk2dSprite>().WorldCenter, StickyBomb.explosionData, Vector2.zero);
+            Vector2 position = extant_drone.GetComponent<tk2dSprite>().WorldCenter;
+            var defaultExplosion = GameManager.Instance.Dungeon.sharedSettingsPrefab.DefaultExplosionData;
+            explosionData.effect = defaultExplosion.effect;
+            explosionData.ignoreList = defaultExplosion.ignoreList;
+            if (LastOwner.HasMTGConsoleID("remote_bullets") || LastOwner.HasMTGConsoleID("3rd_party_controller")) //remote bullets = x2 damage
+                explosionData.damage = 100f;
+            else
+                explosionData.damage = 50f;
+            
+            if (LastOwner.HasMTGConsoleID("air_strike")) //air strike = +4 'splosions
+            {
+                for (int i = -1; i <= 1; i++)
+                    for (int j = -1; j <= 1; j++)
+                        if (Mathf.Abs(i) + Mathf.Abs(j) == 1)
+                            Exploder.Explode(position + new Vector2(i * 3f, j * 3f), explosionData, Vector2.zero);
+            }
+
+            if (LastOwner.HasMTGConsoleID("napalm_strike")) //napalm strike = fire circle
+                DoNapalmSynergy(position);
+
+            Exploder.Explode(position, explosionData, Vector2.zero);
             GameObject.Destroy(extant_drone);
+
         }
 
         public static void BuildDronePrefab()
         {
             if (dronePrefab != null) return;
 
-            dronePrefab = SpriteBuilder.SpriteFromResource(spritePaths[0], null, false).gameObject;
+            dronePrefab = SpriteBuilder.SpriteFromResource(spritePaths[0], null).gameObject;
             dronePrefab.name = "Drone";
-            
+
             //setup rigidbody
             var item = Gungeon.Game.Items["dog"].GetComponent<CompanionItem>();
             var baseRigidbody = EnemyDatabase.GetOrLoadByGuid(item.CompanionGuid).specRigidbody;
@@ -152,8 +190,17 @@ namespace CustomItems
             dronePrefab.SetActive(false);
         }
 
-
-
+        GoopDefinition napalm;
+        DeadlyDeadlyGoopManager ddgm;
+        private void DoNapalmSynergy(Vector2 position)
+        {
+            if (!ddgm)
+            {
+                napalm = Tools.sharedAuto1.LoadAsset<GoopDefinition>("napalmgoopthatworks");
+                ddgm = DeadlyDeadlyGoopManager.GetGoopManagerForGoopType(napalm);
+            }
+            ddgm.AddGoopCircle(position, 3f);
+        }
 
         public class DroneBehaviour : BraveBehaviour
         {
@@ -163,10 +210,9 @@ namespace CustomItems
 
             void Start()
             {
-                //PhysicsEngine.Instance.RegisterOverlappingGhostCollisionExceptions(specRigidbody, null, false);
-
                 spriteAnimator.Play("idle");
                 sprite.renderer.material.shader = ShaderCache.Acquire(PlayerController.DefaultShaderName);
+                SpriteOutlineManager.AddOutlineToSprite(sprite, Color.black);
             }
 
             void FixedUpdate()
@@ -187,13 +233,14 @@ namespace CustomItems
                 }
 
                 vector.Normalize();
+                float speed = (owner.HasMTGConsoleID("remote_bullets") || owner.HasMTGConsoleID("3rd_party_controller")) ? droneMoveSpeed * 2f : droneMoveSpeed;
                 if (Vector2.Distance(owner.unadjustedAimPoint.XY(), this.sprite.WorldCenter) < .2f)
                 {
                     velocity = Vector2.Lerp(velocity, Vector2.zero, .5f);
                 }
                 else
                 {
-                    velocity = Vector2.Lerp(velocity, vector * droneMoveSpeed, .1f);
+                    velocity = Vector2.Lerp(velocity, vector * speed, .1f);
                 }
                 specRigidbody.Velocity = velocity;
 
@@ -202,6 +249,7 @@ namespace CustomItems
                     spriteAnimator.Play(clip);
 
             }
+
 
             private string GetAnimationDirection(Vector2 velocity)
             {

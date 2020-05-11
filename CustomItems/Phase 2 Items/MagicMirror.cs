@@ -5,6 +5,7 @@ using System.Text;
 
 using UnityEngine;
 using ItemAPI;
+
 namespace CustomItems
 {
     public class MagicMirror : PlayerItem
@@ -29,6 +30,7 @@ namespace CustomItems
             ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Curse, 1);
 
             item.quality = ItemQuality.B;
+            item.AddToSubShop(ItemBuilder.ShopType.Cursula, 1f);
         }
 
         protected override void DoEffect(PlayerController user)

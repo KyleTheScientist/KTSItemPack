@@ -5,7 +5,7 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 
-using CustomItems;
+using ItemAPI;
 namespace ItemAPI
 {
     public static class SpriteBuilder
@@ -18,21 +18,21 @@ namespace ItemAPI
         /// Returns an object with a tk2dSprite component with the 
         /// texture of a file in the sprites folder
         /// </summary>
-        public static GameObject SpriteFromFile(string spriteName, GameObject obj = null, bool copyFromExisting = true)
+        public static GameObject SpriteFromFile(string spriteName, GameObject obj = null)
         {
             string filename = spriteName.Replace(".png", "");
 
             var texture = ResourceExtractor.GetTextureFromFile(filename);
             if (texture == null) return null;
 
-            return SpriteFromTexture(texture, spriteName, obj, copyFromExisting);
+            return SpriteFromTexture(texture, spriteName, obj);
         }
 
         /// <summary>
         /// Returns an object with a tk2dSprite component with the 
         /// texture of an embedded resource
         /// </summary>
-        public static GameObject SpriteFromResource(string spriteName, GameObject obj = null, bool copyFromExisting = true)
+        public static GameObject SpriteFromResource(string spriteName, GameObject obj = null)
         {
             string extension = !spriteName.EndsWith(".png") ? ".png" : "";
             string resourcePath = spriteName + extension;
@@ -40,27 +40,25 @@ namespace ItemAPI
             var texture = ResourceExtractor.GetTextureFromResource(resourcePath);
             if (texture == null) return null;
 
-            return SpriteFromTexture(texture, resourcePath, obj, copyFromExisting);
+            return SpriteFromTexture(texture, resourcePath, obj);
         }
 
         /// <summary>
         /// Returns an object with a tk2dSprite component with the texture provided
         /// </summary>
-        public static GameObject SpriteFromTexture(Texture2D texture, string spriteName, GameObject obj = null, bool copyFromExisting = true)
+        public static GameObject SpriteFromTexture(Texture2D texture, string spriteName, GameObject obj = null)
         {
             if (obj == null)
             {
                 obj = new GameObject();
             }
             tk2dSprite sprite;
-            if (copyFromExisting)
-                sprite = obj.AddComponent<tk2dSprite>(baseSprite);
-            else
-                sprite = obj.AddComponent<tk2dSprite>();
+            sprite = obj.AddComponent<tk2dSprite>();
 
             int id = AddSpriteToCollection(spriteName, itemCollection);
             sprite.SetSprite(itemCollection, id);
             sprite.SortingOrder = 0;
+            sprite.IsPerpendicular = true;
 
             obj.GetComponent<BraveBehaviour>().sprite = sprite;
 
@@ -135,10 +133,12 @@ namespace ItemAPI
                 }
             }
 
-            var clip = new tk2dSpriteAnimationClip();
-            clip.name = clipName;
-            clip.fps = 15;
-            clip.wrapMode = wrapMode;
+            var clip = new tk2dSpriteAnimationClip()
+            {
+                name = clipName,
+                fps = 15,
+                wrapMode = wrapMode,
+            };
             Array.Resize(ref animator.Library.clips, animator.Library.clips.Length + 1);
             animator.Library.clips[animator.Library.clips.Length - 1] = clip;
 
@@ -245,7 +245,6 @@ namespace ItemAPI
             Type type = comp.GetType();
             if (type != other.GetType()) return null; // type mis-match
             PropertyInfo[] pinfos = type.GetProperties();
-            //CustomItems.Tools.Print($"{typeof(T)} + Properties: ");
             foreach (var pinfo in pinfos)
             {
                 if (pinfo.CanWrite)
@@ -253,70 +252,31 @@ namespace ItemAPI
                     try
                     {
 
-                        //CustomItems.Tools.Print($"  {pinfo.Name}: {pinfo.GetValue(other, null)}");
                         pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
                     }
-                    catch { } // In case of NotImplementedException being thrown. For some reason specifying that exception didn't seem to catch it, so I didn't catch anything specific.
+                    catch { }
                 }
                 else
                 {
                 }
             }
-            //CustomItems.Tools.Print($"{typeof(T)} + Fields: ");
 
             FieldInfo[] finfos = type.GetFields();
             foreach (var finfo in finfos)
             {
-                //CustomItems.Tools.Print($"  {finfo.Name}: {finfo.GetValue(other)}");
                 finfo.SetValue(comp, finfo.GetValue(other));
             }
             return comp as T;
+        }
+
+        public static void SetColor(this tk2dSprite sprite, Color color)
+        {
+            sprite.renderer.material.SetColor("_OverrideColor", color);
         }
 
         public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component
         {
             return go.AddComponent<T>().CopyFrom(toAdd) as T;
         }
-
-        /*
-        public static GameObject SpriteObjectFromTexture(Texture2D texture)
-        {
-            Rect region = new Rect(0, 0, texture.width, texture.height);
-
-            var obj = tk2dSprite.CreateFromTexture(texture, tk2dSpriteCollectionSize.PixelsPerMeter(16), region, Vector2.zero);
-
-            var collection = obj.GetComponent<tk2dSprite>().Collection;
-            UnityEngine.Object.DontDestroyOnLoad(collection);
-
-            var def = collection.spriteDefinitions[0];
-            def.ReplaceTexture(texture);
-            def.name = texture.name;
-
-            Serializer.Serialize(def, texture.name + "_latedef");
-            return obj;
-        }
-        */
-
-        /*
-       /// <summary>
-       /// Adds a new sprite definition to the ammonomicon's collection
-       /// </summary>
-       /// <returns>The sprite ID of the newly added definition</returns>
-       public static int AddSpriteToAmmonomicon(tk2dSpriteDefinition definition)
-       {
-           //Add sprite to definitions
-           var iconCollection = AmmonomiconController.ForceInstance.EncounterIconCollection;
-           var defs = iconCollection.spriteDefinitions;
-           var newDefs = defs.Concat(new tk2dSpriteDefinition[] { definition }).ToArray();
-           iconCollection.spriteDefinitions = newDefs;
-
-           //Reset lookup dictionary
-           FieldInfo f = typeof(tk2dSpriteCollectionData).GetField("spriteNameLookupDict", BindingFlags.Instance | BindingFlags.NonPublic);
-           f.SetValue(iconCollection, null);  //Set dictionary to null
-           iconCollection.InitDictionary(); //InitDictionary only runs if the dictionary is null
-
-           return newDefs.Length - 1;
-       }
-       */
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 
 using UnityEngine;
 using ItemAPI;
+
 using MonoMod.RuntimeDetour;
 using Dungeonator;
 using Random = UnityEngine.Random;
@@ -472,8 +473,6 @@ namespace CustomItems
                 else
                     this.m_aiActor.OverrideTarget = roomEnemies[Random.Range(0, roomEnemies.Count)]?.specRigidbody;
             }
-
-
         }
 
     }
